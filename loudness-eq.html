@@ -1,0 +1,430 @@
+<html>
+  <head>
+      <script
+        src="https://code.jquery.com/jquery-3.6.0.min.js"
+        integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4="
+        crossorigin="anonymous"></script>
+
+    <script src="https://d3js.org/d3.v6.min.js"></script>
+
+    <script>
+      // Source:
+
+      const iso_freq = [20, 25, 31.5, 40, 50, 63, 80, 100, 125, 160, 200, 250, 315, 400, 500, 630, 800, 1000, 1250, 1600, 2000, 2500, 3150, 4000, 5000, 6300, 8000, 10000, 12500, 16000, 20000];
+
+      const iso_curves = {
+          0: [76.55, 65.62, 55.12, 45.53, 37.63, 30.86, 25.02, 20.51, 16.65, 13.12, 10.09, 7.54, 5.11, 3.06, 1.48, 0.3, -0.3, -0.01, 1.03, -1.19, -4.11, -7.05, -9.03, -8.49, -4.48, 3.28, 9.83, 10.48, 8.38, 14.1, 79.65],
+          10: [83.75, 75.76, 68.21, 61.14, 54.96, 49.01, 43.24, 38.13, 33.48, 28.77, 24.84, 21.33, 18.05, 15.14, 12.98, 11.18, 9.99, 10, 11.26, 10.43, 7.27, 4.45, 3.04, 3.8, 7.46, 14.35, 20.98, 23.43, 22.33, 25.17, 81.47],
+          20: [89.58, 82.65, 75.98, 69.62, 64.02, 58.55, 53.19, 48.38, 43.94, 39.37, 35.51, 31.99, 28.69, 25.67, 23.43, 21.48, 20.1, 20.01, 21.46, 21.4, 18.15, 15.38, 14.26, 15.14, 18.63, 25.02, 31.52, 34.43, 33.04, 34.67, 84.18],
+          40: [99.85, 93.94, 88.17, 82.63, 77.78, 73.08, 68.48, 64.37, 60.59, 56.7, 53.41, 50.4, 47.58, 44.98, 43.05, 41.34, 40.06, 40.01, 41.82, 42.51, 39.23, 36.51, 35.61, 36.65, 40.01, 45.83, 51.8, 54.28, 51.49, 51.96, 92.77],
+          60: [109.51, 104.23, 99.08, 94.18, 89.96, 85.94, 82.05, 78.65, 75.56, 72.47, 69.86, 67.53, 65.39, 63.45, 62.05, 60.81, 59.89, 60.01, 62.15, 63.19, 59.96, 57.26, 56.42, 57.57, 60.89, 66.36, 71.66, 73.16, 68.63, 68.43, 104.92],
+          80: [118.99, 114.23, 109.65, 105.34, 101.72, 98.36, 95.17, 92.48, 90.09, 87.82, 85.92, 84.31, 82.89, 81.68, 80.86, 80.17, 79.67, 80.01, 82.48, 83.74, 80.59, 77.88, 77.07, 78.31, 81.62, 86.81, 91.41, 91.74, 85.41, 84.67, 118.95],
+          100: [128.41, 124.15, 120.11, 116.38, 113.35, 110.65, 108.16, 106.17, 104.48, 103.03, 101.85, 100.97, 100.3, 99.83, 99.62, 99.5, 99.44, 100.01, 102.81, 104.25, 101.18, 98.48, 97.67, 99, 102.3, 107.23, 111.11, 110.23, 102.07, 100.83, 133.73]
+      }
+
+      function interpolate(arr1, arr2) {
+        const interp = [];
+        for (let i = 0; i < arr1.length; i++) interp[i] = (arr1[i] + arr2[i]) / 2;
+        return interp;
+      }
+
+      iso_curves[30] = interpolate(iso_curves[20], iso_curves[40]);
+      iso_curves[50] = interpolate(iso_curves[40], iso_curves[60]);
+      iso_curves[70] = interpolate(iso_curves[60], iso_curves[80]);
+      iso_curves[90] = interpolate(iso_curves[80], iso_curves[100]);
+
+      for (let phon=5; phon<=95; phon+=10) {
+        iso_curves[phon] = interpolate(iso_curves[phon-5], iso_curves[phon+5]);
+      }
+
+      // console.log(iso_curves)
+
+      const iso_eq = {};
+
+      for (let phon in iso_curves) {
+        let eq=[];
+        iso_freq.forEach((freq,i) => {
+          eq[i] = phon-85 + iso_curves[85][i]  -  iso_curves[phon][i];
+        });
+        iso_eq[phon] = eq;
+      }
+
+      // console.log(iso_eq)
+
+    </script>
+
+    <script>
+      $(function() {
+        ISO_chart();
+
+        ISO_EQ_chart(65);
+        ISO_EQ_chart(70);
+        ISO_EQ_chart(75);
+        ISO_EQ_chart(80);
+        ISO_EQ_chart(85);
+        ISO_EQ_chart(90);
+        ISO_EQ_chart(95);
+        ISO_EQ_chart(100);
+      });
+
+      function ISO_chart() {
+        // const SVG_WIDTH = 1200;
+        // const SVG_HEIGHT = 900;
+
+        // set the dimensions and margins of the graph
+        var SVG_WIDTH = 1200,
+            SVG_HEIGHT = 900,
+            MARGIN = {top: 30, right: 30, bottom: 60, left: 30},
+            width = SVG_WIDTH - MARGIN.left - MARGIN.right,
+            height = SVG_HEIGHT - MARGIN.top - MARGIN.bottom;
+
+        // Axis definitions
+        var FREQ_TICKS = [20,50,100,200,500,1000,2000,5000,10000,20000],
+            FREQ_MIN = 20,
+            FREQ_MAX = 20000,
+            SPL_MIN = -10,
+            SPL_MAX = 130;
+
+        // append the svg object to the body of the page
+        var svg = d3.select("#ISO")
+          .append("svg")
+            .attr("width", SVG_WIDTH)
+            .attr("height", SVG_HEIGHT)
+            .style("background-color", "#f0f0f0")
+          .append("g")
+            .attr("transform",
+                  "translate(" + MARGIN.left + "," + MARGIN.top + ")");
+
+        // Graph title
+        svg.append("text")
+          .attr("x", SVG_WIDTH / 2)
+          .attr("y", 10)
+          .style("text-anchor", "middle")
+          .style("font-size", "18pt")
+          .text("Equal Loudness Countours (from standard ISO 226-2003)");
+
+        // X axis label
+        svg.append("text")
+          .attr("x", SVG_WIDTH / 2)
+          .attr("y", SVG_HEIGHT - MARGIN.bottom + 10)
+          .style("text-anchor", "middle")
+          .text("Frequency (Hz)");
+
+        // Y axis label
+        svg.append("text")
+          .attr("transform", "rotate(-90)")
+          .attr("x", - SVG_HEIGHT / 2)
+          .attr("y", 0)
+          .style("text-anchor", "middle")
+          .text("SPL - Sound Pressure Level (dB)");
+
+        // Add X axis
+        var x = d3.scaleLog()
+          .domain([FREQ_MIN,FREQ_MAX])
+          .range([ MARGIN.left, width ]);
+        svg.append("g")
+          .attr("transform", `translate(0,${height})`)
+          .call(d3.axisBottom(x)
+              .tickValues(FREQ_TICKS)
+              .tickFormat(d3.format(",.0f"))
+              // .ticks(10)
+            );
+
+        // Add Y axis
+        var y = d3.scaleLinear()
+          .domain([SPL_MIN, SPL_MAX])
+          .range([ height, MARGIN.top ]);
+        svg.append("g")
+          .attr("transform", `translate(${MARGIN.left},0)`)
+          .call(d3.axisLeft(y));
+
+        function addLine(x1,y1,x2,y2,color,strokeWidth) {
+          svg.append("path")
+            .datum([{x: x1, y: y1}, {x: x2, y: y2}])
+            .attr("fill", "none")
+            .attr("stroke", color ? color : 'grey')
+            .attr("stroke-width", strokeWidth ? strokeWidth : 0.5)
+            .attr("d", d3.line()
+              .x(d => x(d.x))
+              .y(d => y(d.y))
+            );
+        }
+
+        FREQ_TICKS.forEach(freq => {
+          if (freq===100 || freq===1000 || freq===10000)
+            addLine(freq,130,freq,-10,'darkgrey', 1.4);
+          else
+            addLine(freq,130,freq,-10);
+        })
+
+        addLine(FREQ_MIN,SPL_MAX, FREQ_MAX,SPL_MAX,"black",1.0);
+        for (let spl=SPL_MIN; spl<SPL_MAX; spl+=10)
+          addLine(FREQ_MIN,spl, FREQ_MAX,spl);
+
+
+        function addCurve(phon) {
+          const data = [];
+          for (let i=0; i<iso_freq.length; i++)
+            data.push({x: iso_freq[i], y: iso_curves[phon][i]});
+
+          svg.append("path")
+            .datum(data)
+            .attr("fill", "none")
+            .attr("stroke", phon==82 ? "red" : "steelblue")
+            .attr("stroke-width", 1.5)
+            .attr("d", d3.line()
+              .x(d => x(d.x))
+              .y(d => y(d.y))
+              .curve(d3.curveNatural)
+            );
+
+          const idx = iso_freq.indexOf(800);
+          svg.append("text")
+            .attr("text-anchor", "middle")
+            .attr('font-size', '10pt')
+            .attr("x", d => x(iso_freq[idx]))
+            .attr("y", d => y(iso_curves[phon][idx]+1))
+            .text(`${phon} phons`);
+        }
+
+        for (let phon in iso_curves)
+          addCurve(phon)
+      }
+
+
+      function ISO_EQ_chart(phon) {
+        // set the dimensions and margins of the graph
+        var SVG_WIDTH = 1200,
+            SVG_HEIGHT = 400,
+            MARGIN = {top: 30, right: 30, bottom: 60, left: 30},
+            width = SVG_WIDTH - MARGIN.left - MARGIN.right,
+            height = SVG_HEIGHT - MARGIN.top - MARGIN.bottom;
+
+        // Axis definitions
+        var FREQ_TICKS = [20,50,100,200,500,1000,2000,5000,10000,20000],
+            FREQ_MIN = 20,
+            FREQ_MAX = 20000,
+            EQ_MIN = -10,
+            EQ_MAX = +10;
+
+        var title = `<h3>EQ for ${phon}dB</h3>`;
+        $("#ISO_EQ").append(title);
+
+        // function table_row(col1, col2, col3, col4, col5) { return `<tr> <td>${col1}</td> <td>${col2}</td>  <td>${col3}</td> <td>${col4}</td> <td>${col5}</td> </tr>`; }
+
+        function table_row(...cols) {
+          let html = '<tr>';
+          cols.forEach(col => html += '<td>' + col + '</td>')
+          html += '</tr>';
+          return html;
+        }
+
+        function dbdelta(freq, phon, delta) {
+          const idx = iso_freq.indexOf(freq);
+          if (!iso_curves[phon+delta]) return "-";
+          const db = iso_curves[phon][idx] - iso_curves[phon+delta][idx] + delta;
+          return db;
+        }
+
+        let table = "<table>";
+        table += table_row('<b>Simulated dB</b>',
+              '<b>25Hz</b>', '<b>200Hz</b>', '<b>2500Hz</b>', '<b>16kHz</b>',
+              '<b>Average</b>',
+              '<b>Bal 25Hz</b>', '<b>Bal 200Hz</b>', '<b>Bal 2500Hz</b>', '<b>Bal 16kHz</b>',
+              '<b>Description</b>');
+
+        function table_row_data(delta) {
+          function fmt(n) { return  d3.format(".2f")(n) + 'dB' }
+
+          const dbdelta25 = dbdelta(25, phon, delta);
+          const dbdelta200 = dbdelta(200, phon, delta);
+          const dbdelta2500 = dbdelta(2500, phon, delta);
+          const dbdelta16000 = dbdelta(16000, phon, delta);
+          const average = (dbdelta25 + dbdelta2500 + dbdelta16000) / 3;
+
+          return table_row(`&#x394; ${delta>=0 ? '+' : ''}${delta}dB`,
+                      fmt(dbdelta25), fmt(dbdelta200), fmt(dbdelta2500), fmt(dbdelta16000),
+                      fmt(average),
+                      fmt(dbdelta25-average), fmt(dbdelta200-average), fmt(dbdelta2500-average), fmt(dbdelta16000-average),
+                      `...to approximate the balance of ${phon+delta}dB when listening at ${phon}dB`);
+        }
+        table += table_row_data(10);
+        table += table_row_data(5);
+        table += table_row_data(0);
+        table += table_row_data(-5);
+        table += table_row_data(-10);
+
+        table += "</table>";
+        $("#ISO_EQ").append(table)
+
+
+        // append the svg object to the body of the page
+        var svg = d3.select("#ISO_EQ")
+          .append("svg")
+            .attr("width", SVG_WIDTH)
+            .attr("height", SVG_HEIGHT)
+            .style("background-color", "#f0f0ff")
+          .append("g")
+            .attr("transform",
+                  "translate(" + MARGIN.left + "," + MARGIN.top + ")");
+
+        // Graph title
+        svg.append("text")
+          .attr("x", SVG_WIDTH / 2)
+          .attr("y", 10)
+          .style("text-anchor", "middle")
+          .style("font-size", "18pt")
+          .text(`EQ for ${phon}dB`);
+
+        // X axis label
+        svg.append("text")
+          .attr("x", SVG_WIDTH / 2)
+          .attr("y", SVG_HEIGHT - MARGIN.bottom + 10)
+          .style("text-anchor", "middle")
+          .text("Frequency (Hz)");
+
+        // Y axis label
+        svg.append("text")
+          .attr("transform", "rotate(-90)")
+          .attr("x", - SVG_HEIGHT / 2)
+          .attr("y", 0)
+          .style("text-anchor", "middle")
+          .text("dB");
+
+        // Add X axis
+        var x = d3.scaleLog()
+          .domain([FREQ_MIN,FREQ_MAX])
+          .range([ MARGIN.left, width ]);
+        svg.append("g")
+          .attr("transform", `translate(0,${height})`)
+          .call(d3.axisBottom(x)
+              .tickValues(FREQ_TICKS)
+              .tickFormat(d3.format(",.0f"))
+              // .ticks(10)
+            );
+
+        // Add Y axis
+        var y = d3.scaleLinear()
+          .domain([EQ_MIN, EQ_MAX])
+          .range([ height, MARGIN.top ]);
+        svg.append("g")
+          .attr("transform", `translate(${MARGIN.left},0)`)
+          .call(d3.axisLeft(y));
+
+        function addLine(x1,y1,x2,y2,color,strokeWidth) {
+          svg.append("path")
+            .datum([{x: x1, y: y1}, {x: x2, y: y2}])
+            .attr("fill", "none")
+            .attr("stroke", color ? color : 'grey')
+            .attr("stroke-width", strokeWidth ? strokeWidth : 0.5)
+            .attr("d", d3.line()
+              .x(d => x(d.x))
+              .y(d => y(d.y))
+            );
+        }
+
+        FREQ_TICKS.forEach(freq => {
+          if (freq===100 || freq===1000 || freq===10000)
+            addLine(freq,EQ_MIN,freq,EQ_MAX,'darkgrey', 1.4);
+          else
+            addLine(freq,EQ_MIN,freq,EQ_MAX);
+        })
+
+        addLine(FREQ_MIN,EQ_MAX, FREQ_MAX,EQ_MAX,"black",1.0);
+        for (let eq=EQ_MIN; eq<EQ_MAX; eq+=1)
+          addLine(FREQ_MIN,eq, FREQ_MAX,eq);
+        addLine(FREQ_MIN,0, FREQ_MAX,0, "black",1.0);
+
+
+
+        function addCurve(phon, delta) {
+          let curve_p = iso_curves[phon];
+          let curve_d = iso_curves[phon+delta];
+
+          const label = `${delta}dB`
+          const label_x = 40;
+          let label_y;
+
+          if (!curve_d) return;
+
+          const data = [];
+          for (let i=0; i<iso_freq.length; i++) {
+            let x = iso_freq[i];
+            let y = curve_p[i] - curve_d[i] + delta;
+            if (x === label_x) label_y = y;
+            data.push({x:x, y:y});
+          }
+
+          const deltaColor = [];
+          deltaColor[10] = 'blue';
+          deltaColor[5] = 'green';
+          deltaColor[0] = 'black';
+          deltaColor[-5] = 'grey';
+          deltaColor[-10] = 'red';
+
+          svg.append("path")
+            .datum(data)
+            .attr("fill", "none")
+            // .attr("stroke", delta===0 ? "red" : "steelblue")
+            .attr("stroke", deltaColor[delta])
+            .attr("stroke-width", 1.5)
+            .attr("d", d3.line()
+              .x(d => x(d.x))
+              .y(d => y(d.y))
+              .curve(d3.curveNatural)
+            );
+
+          svg.append("text")
+            .attr("text-anchor", "middle")
+            .attr('font-size', '10pt')
+            .attr("x", d => x(label_x))
+            .attr("y", d => y(label_y))
+            .text(`${delta}dB`);
+
+        };
+
+        for (let delta = -10; delta<=10; delta+=5) {
+          addCurve(phon, delta);
+        }
+      }
+
+    </script>
+
+    <style>
+
+      svg text {
+        font-family: "Open sans", verdana, arial, sans-serif;
+      }
+
+      svg .line {
+        fill: none;
+        stroke: steelblue;
+        stroke-width: 2px;
+      }
+
+      td {
+        text-align: left;
+        padding: 2px 5px;
+      }
+
+      td:nth-child(6), td:last-child {
+        font-style: italic;
+      }
+
+      td:not(:first-child):not(:last-child) {
+        text-align: right;
+      }
+
+
+    </style>
+  </head>
+
+  <body>
+    <h1>Equal Loudness Equalization</h1>
+
+    <div id="ISO"></div>
+
+    <div id="ISO_EQ"></div>
+
+  </body>
+</html>
