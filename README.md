@@ -8,9 +8,11 @@ This project estimated equalisation curves (EQ) to adapt audio for different sou
 
 For example, if a speaker system is configured for a SPL 70dB reference level, then a +10dB EQ will simulate the perceived balance as if the actual SPL is 80dB (with boosted bass and highs).
 
+I run my home studio around 65-70dB. That means I tend to create mixes and masters with too much bass. By applying the +10dB EQ simulation, I get better balanced audio as if I was actually listening at 75-80dB.
+
 The estimates are derived from the [equal-loudness contour](https://en.wikipedia.org/wiki/Equal-loudness_contour) from the ISO 226:2003 standard.
 
-The EQ Parameters has sample EQ settings. The sections below explain how these parameters are estimated.
+The EQ Parameters section has sample EQ settings. The sections below explain how these parameters are estimated.
 
 ## EQ Parameters
 
@@ -89,6 +91,17 @@ The table at the top of this page shows the parameters:
 * 3 bell filters centered on 25Hz, 2500Hz, 16kHz
 * Boost/reduction from the table above under EQ for 80dB
 * Q estimated by manually comparing the chart in EQ for 80dB against the graph in Sonarworks and Logic Pro
+
+By using more points on the EQ curve, it is possible to create a more accurate filter. I use 3 because that's what is supported by "Custom Target" EQ in Sonarworks.
+
+## Implementation
+
+To use the following, download this Git project and open either of these files.
+
+`loudness-eq.html`: The [EQ and chart generation software](loudness-eq.html) for this project is a single HTML file that generates the various charts and tables. It was tested in April 2021 on a Mac in 3 browsers - Brave, Chrome and Safari.
+
+`iso226-curves.xlsx`: The [Excel document](iso226-curves.xlsx) has the same data but different graphics.
+
 
 ## References
 
