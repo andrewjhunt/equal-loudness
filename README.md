@@ -1,5 +1,7 @@
 # EQ for Equal Loudness
 
+> **Use simple EQ to simulate the audio balance at a different loudness without changing your volume. Improve the bass-mid-high balance in your mixing and mastering.**
+
 ## Overview
 
 Human hearing perceives the balance of low-mid-high frequencies differently at different volumes. Typically, louder volumes will boost the perception of bass (particularly) and highs more than mid-range.
