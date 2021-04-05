@@ -1,6 +1,6 @@
 # EQ for Equal Loudness
 
-> **Use simple EQ to simulate the audio balance at a different loudness without changing your volume. Improve the bass-mid-high balance in your mixing and mastering.**
+> **Use simple EQ to simulate the audio balance at a different loudness without changing your volume. Improve the bass-mid-high balance in your mixing and mastering while listening at a comfortable volume.**
 
 ## Overview
 
