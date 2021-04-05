@@ -44,10 +44,25 @@ These curves show that changes in volume affect perception of different frequenc
 Correct audio balance is critical to audio engineering - particularly when mixing and mastering. The typical sound-pressure-level (SPL) for audio engineering is around 85dB. However, if an engineer is mixing at quieter levels, the low-end and high-end will be perceived relatively more quiet that the mid-range. So engineering at a quieter level can lead to audio that is imbalanced -- likely with too much bass and highs.
 
 
+## SPL Deltas
+
+The SPL Deltas chart shows the relative change in perceived loudness for different phon levels. Importantly, in the range of 40-100dB which covers nearly all sound studio work, the differences are very similar. This means that the same EQ curves can be used at any volume within that range. (The small differences are likely less important that other factors like speaker performance and the EQ design.)
+
+![SPL Deltas](./images/spl-deltas.png)
+_SPL Deltas_
+
 
 ## EQ for 80dB
 
+So, we'll use 80dB as the reference for generating the EQs. The chart shows the target EQ curves that we would use for a system at 80dB to simulate the perceived frequency balance at higher and lower volumes without actually changing the volume.
+
 ![](./images/eq-80db.png)
+
+Columns 2-5 show the boost/reduction at 4 key frequencies - 25Hz, 200Hz, 2500Hz, 16kHz. These are the adjustments to the low-mid-high frequencies to estimate the perceived human differences.
+
+However, these boosts will increase/decrease the overall perceived volume. So, the "Average" column calculates the average of those 4 boosts/reductions as an estimate of the aggregate volume change.
+
+Columns 7-10 adjust the boost/reduction by the average as an approximation of a loudness-neutral EQ. That is, by applying these boost/reduction filters the overall sound will be around the same volume (though that will depend a lot on the sound that is playing).  Think of this as a bit like the "Make up" gain on a plug-in.
 
 | Simulated dB | 25Hz | 200Hz | 2500Hz | 16kHz | Average | Bal 25Hz | Bal 200Hz | Bal 2500Hz | Bal 16kHz | Description |
 | -------- | ------ | ------ | ------ | ------ | ------ | ------ | ------ | ------ | ------ | ------ |
@@ -57,9 +72,21 @@ Correct audio balance is critical to audio engineering - particularly when mixin
 | Δ -5dB | −2.50dB | −0.98dB | 0.16dB | −0.94dB | −1.10dB | −1.40dB | 0.11dB | 1.25dB | 0.15dB | ...to approximate the balance of 75dB when listening at 80dB |
 | Δ -10dB | −5.00dB | −1.97dB | 0.31dB | −1.88dB | −2.19dB | −2.81dB | 0.22dB | 2.50dB | 0.31dB | ...to approximate the balance of 70dB when listening at 80dB |
 
+## EQ Parameters for 80dB
+
+Finally, we convert the balanced boost+frequency table to a set of EQ parameters.
+
+This step depends upon the choice of EQ plug-in. This work was designed to work with SoundID Reference from [Sonarworks](https://www.sonarworks.com) and also tested with Logic Pro's standard EQ plugin.
+
+The table at the top of this page shows the parameters:
+* Simulations of perceived balance at +10db, +5db, 0db (flat), -5db, -10db
+* 3 bell filters centered on 25Hz, 2500Hz, 16kHz
+* Boost/reduction from the table above under EQ for 80dB
+* Q estimated by manually comparing the chart in EQ for 80dB against the graph in Sonarworks and Logic Pro
 
 ## References
 
+* [EQ and chart generation software](loudness-eq.html) for this project
 * Wikipedia article: [Equal-loudness contour](https://en.wikipedia.org/wiki/Equal-loudness_contour)
 * ISO Standard: [ISO 226:2003 Acoustics — Normal equal-loudness-level contours](https://www.iso.org/standard/34222.html) (not free)
 * Sweetwater: [How Loud Should You Mix?](https://www.sweetwater.com/insync/how-loud-should-you-mix/)
