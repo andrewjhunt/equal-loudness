@@ -22,6 +22,8 @@
           100: [128.41, 124.15, 120.11, 116.38, 113.35, 110.65, 108.16, 106.17, 104.48, 103.03, 101.85, 100.97, 100.3, 99.83, 99.62, 99.5, 99.44, 100.01, 102.81, 104.25, 101.18, 98.48, 97.67, 99, 102.3, 107.23, 111.11, 110.23, 102.07, 100.83, 133.73]
       }
 
+      const iso_standard = Object.keys(iso_curves);
+
       function interpolate(arr1, arr2) {
         const interp = [];
         for (let i = 0; i < arr1.length; i++) interp[i] = (arr1[i] + arr2[i]) / 2;
@@ -101,7 +103,15 @@
           .attr("y", 10)
           .style("text-anchor", "middle")
           .style("font-size", "18pt")
-          .text("Equal Loudness Countours (from standard ISO 226-2003)");
+          .text("Equal Loudness Contours (from standard ISO 226-2003)");
+
+        // Legend
+        svg.append("text")
+          .attr("x", SVG_WIDTH / 2 + 270)
+          .attr("y", 65)
+          .style("text-anchor", "middle")
+          .style("font-size", "10pt")
+          .text("* Solid lines are from ISO 226. Dashed lines are interpolated.");
 
         // X axis label
         svg.append("text")
@@ -170,7 +180,8 @@
           svg.append("path")
             .datum(data)
             .attr("fill", "none")
-            .attr("stroke", phon==82 ? "red" : "steelblue")
+            .attr("stroke", "steelblue")
+            .style("stroke-dasharray", iso_standard.indexOf(phon) >= 0 ? ("100,0") : ("10, 10"))
             .attr("stroke-width", 1.5)
             .attr("d", d3.line()
               .x(d => x(d.x))
@@ -388,6 +399,7 @@
         }
       }
 
+
     </script>
 
     <style>
@@ -414,8 +426,6 @@
       td:not(:first-child):not(:last-child) {
         text-align: right;
       }
-
-
     </style>
   </head>
 
@@ -425,6 +435,7 @@
     <div id="ISO"></div>
 
     <div id="ISO_EQ"></div>
+
 
   </body>
 </html>
