@@ -27,6 +27,10 @@ NOTE: the Q parameter may need adjustment for different EQ systems. See the sect
 | Δ -5dB       | Boost: −1.40dB | Boost: +1.25dB | Boost: +0.15dB |
 | Δ -10dB      | Boost: −2.81dB | Boost: +2.50dB | Boost: +0.31dB  |
 
+
+![+10dB Simulator in Sonarworks SoundID Reference](./images/SoundID-Reference-custom-target.png)
+_+10dB Simulator in Sonarworks SoundID Reference as a Custom Target_
+
 ![+10dB Simulator in Logic Pro EQ](./images/logic-pro-eq.png)
 _+10dB Simulator in Logic Pro EQ_
 
@@ -64,13 +68,15 @@ However, these boosts will increase/decrease the overall perceived volume. So, t
 
 Columns 7-10 adjust the boost/reduction by the average as an approximation of a loudness-neutral EQ. That is, by applying these boost/reduction filters the overall sound will be around the same volume (though that will depend a lot on the sound that is playing).  Think of this as a bit like the "Make up" gain on a plug-in.
 
-| Simulated dB | 25Hz | 200Hz | 2500Hz | 16kHz | Average | Bal 25Hz | Bal 200Hz | Bal 2500Hz | Bal 16kHz | Description |
-| -------- | ------ | ------ | ------ | ------ | ------ | ------ | ------ | ------ | ------ | ------ |
-| Δ +10dB | 5.04dB | 2.04dB | −0.30dB | 1.92dB | 2.22dB | 2.82dB | −0.18dB | −2.52dB | −0.30dB | ...to approximate the balance of 90dB when listening at 80dB |
-| Δ +5dB | 2.52dB | 1.02dB | −0.15dB | 0.96dB | 1.11dB | 1.41dB | −0.09dB | −1.26dB | −0.15dB | ...to approximate the balance of 85dB when listening at 80dB |
-| Δ +0dB | 0.00dB | 0.00dB | 0.00dB | 0.00dB | 0.00dB | 0.00dB | 0.00dB | 0.00dB | 0.00dB | ...to approximate the balance of 80dB when listening at 80dB |
-| Δ -5dB | −2.50dB | −0.98dB | 0.16dB | −0.94dB | −1.10dB | −1.40dB | 0.11dB | 1.25dB | 0.15dB | ...to approximate the balance of 75dB when listening at 80dB |
-| Δ -10dB | −5.00dB | −1.97dB | 0.31dB | −1.88dB | −2.19dB | −2.81dB | 0.22dB | 2.50dB | 0.31dB | ...to approximate the balance of 70dB when listening at 80dB |
+Each row corresponds to a different simulated loudness. For example, the first row for "+10dB" defines the approximate balance of 90dB but when listening at 80dB.
+
+| Simulated dB | 25Hz | 200Hz | 2500Hz | 16kHz | Average | Bal 25Hz | Bal 200Hz | Bal 2500Hz | Bal 16kHz |
+| -------- | ------ | ------ | ------ | ------ | ------ | ------ | ------ | ------ | ------ |
+| Δ +10dB | 5.04dB | 2.04dB | −0.30dB | 1.92dB | *2.22dB* | 2.82dB | −0.18dB | −2.52dB | −0.30dB |
+| Δ +5dB | 2.52dB | 1.02dB | −0.15dB | 0.96dB | *1.11dB* | 1.41dB | −0.09dB | −1.26dB | −0.15dB |
+| Δ +0dB | 0.00dB | 0.00dB | 0.00dB | 0.00dB | *0.00dB* | 0.00dB | 0.00dB | 0.00dB | 0.00dB |
+| Δ -5dB | −2.50dB | −0.98dB | 0.16dB | −0.94dB | *−1.10dB* | −1.40dB | 0.11dB | 1.25dB | 0.15dB |
+| Δ -10dB | −5.00dB | −1.97dB | 0.31dB | −1.88dB | *−2.19dB* | −2.81dB | 0.22dB | 2.50dB | 0.31dB |
 
 ## EQ Parameters for 80dB
 
